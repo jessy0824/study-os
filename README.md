@@ -42,5 +42,13 @@ week 1: finish lab0 and establish ucore environment, read the first and second l
         ebp = ((uint32_t*)ebp)[0];      
         }
 
-      练习6：
-       
+      练习6：中断描述符表一个表项占用8字节，其中2-3字节是段选择子，0-1字节和6-7字节拼成位移，两者联合便是中断处理程序的入口地址
+       void idt_init(void) {
+    extern uintptr_t __vectors[]; 
+    int i;
+    for(i=0; i<sizeof(idt)/sizeof(struct gatedesc);i++){
+        SETGATE(idt[i], 0, GD_KTEXT, __vectors[i], DPL_KERNEL);
+    } 
+    SETGATE(idt[T_SWITCH_TOK], 0, GD_KTEXT, __vectors[T_SWITCH_TOK], DPL_USER);
+    lidt(&idt_pd);
+}
